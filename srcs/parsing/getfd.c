@@ -36,10 +36,9 @@ int		get_fdI(t_node *current, int i, int j)
 	}
 	return (fd);
 }
-int	get_fdO(t_node *current, int i, int j)
+int	get_fdO(t_node *current, int i, int j, int fd)
 {
 	int k;
-	int fd;
 	char *file;
 
 	write(1, current->value, ft_strlen(current->value));
@@ -50,9 +49,12 @@ int	get_fdO(t_node *current, int i, int j)
 			k = i - 1;
 			while (current->value[i] == ' ' || current->value[i] == '>')
 				i++;
-			while (current->value[i] && current->value[i++] != ' ')
+			while (current->value[i] && current->value[i] != ' ' && current->value[i] != '>')
+			{
 				j++;
-			file = ft_substr(current->value, i - j - 1, j);
+				i++;
+			}
+			file = ft_substr(current->value, i - j, j);
 			if (ft_is_present('/', file))
 			{
 				current->value = "";
@@ -60,12 +62,13 @@ int	get_fdO(t_node *current, int i, int j)
 				return (1);
 			}
 			printf("\nfile:%s\n", file);
-			current->value = ft_strjoin(ft_substr(current->value, 0, k), (current->value + i - 1));
+			current->value = ft_strjoin(ft_substr(current->value, 0, k + 1), (current->value + i));
 			printf("current value:%s\n", current->value);
 			if (current->type == 'c')
 				fd = open(file, O_RDWR | O_CREAT | O_TRUNC, 0777);
 			else
 				fd = open(file, O_RDWR | O_CREAT | O_APPEND, 0777);
+			return (get_fdO(current, 0, 0, fd));
 		}
 		i++;
 	}
