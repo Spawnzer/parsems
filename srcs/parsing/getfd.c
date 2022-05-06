@@ -40,8 +40,8 @@ int	get_fdO(t_node *current, int i, int j, int fd)
 {
 	int k;
 	char *file;
+	char *tmp;
 
-	write(1, current->value, ft_strlen(current->value));
 	while (current->value[i])
 	{
 		if (current->value[i] == '>')
@@ -62,8 +62,10 @@ int	get_fdO(t_node *current, int i, int j, int fd)
 				return (1);
 			}
 			printf("\nfile:%s\n", file);
-			current->value = ft_strjoin(ft_substr(current->value, 0, k + 1), (current->value + i));
-			printf("current value:%s\n", current->value);
+			tmp = ft_strjoin(ft_substr(current->value, 0, k + 1), (current->value + i));
+			free(current->value);
+			current->value = tmp;
+			free(tmp);
 			if (current->type == 'c')
 				fd = open(file, O_RDWR | O_CREAT | O_TRUNC, 0777);
 			else
