@@ -43,7 +43,7 @@ void	ft_to_do(t_node *head, char *sym)
 	while (tmp1 != NULL)
 	{
 		//tmp1->type = get_type(tmp1->value, sym);
-		printf("value:%s, type:%c, fdI:%d, fdO%d\n", tmp1->value, tmp1->type, tmp1->fdI, tmp1->fdO);
+		printf("value:%s, type:%c, fdI:%d, fdO:%d\n", tmp1->value, tmp1->type, tmp1->fdI, tmp1->fdO);
 		if (tmp1->type == 'c' || tmp1->type == 'a')
 			scan_builtins(ft_split(tmp1->value, ' '));
 		else if (tmp1->type == 'p')
@@ -58,6 +58,8 @@ void	ft_to_do(t_node *head, char *sym)
 		tmp1 = tmp1->next;
 	}
 }
+
+
 
 int ms_parsing(void)
 {
@@ -76,8 +78,8 @@ int ms_parsing(void)
 		i++;
 	}
 	tmp = head;
-	printlist(tmp);
-	ft_to_do(head, sym);
+	//printlist(tmp);
+	ft_to_do(tmp, sym);
 	//printf ("%s\n", av[1]);
 	return 0;	
 }
