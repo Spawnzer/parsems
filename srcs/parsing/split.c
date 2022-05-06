@@ -105,6 +105,16 @@ static void	ft_get_next_str(char **next_str, unsigned int *next_str_len,
 					break;
 			}
 		}
+		if ((*next_str)[i] == '\'')
+		{
+			while ((*next_str)[i])
+			{
+				(*next_str_len)++;
+				i++;
+				if ((*next_str)[i] == '\'')
+					break;
+			}
+		}
 		(*next_str_len)++;
 		i++;
 	}
@@ -122,6 +132,33 @@ int	ft_is_present(char c, char *sym)
 		i++;
 	}
 	return 0;
+}
+
+char check_qm (char *str, int i, int s, int d)
+{
+	while (str[++i])
+	{
+		if (str[i] == '\'')
+		{
+			s *= -1;
+			i++;
+			while (str[i] && str[i + 1] != '\'')
+				i++;
+		}
+		else if (str[i] == '"')
+		{
+			d *= -1;
+			i++;
+			while (str[i + 1] && str[i + 1] != '"')
+				i++;
+		}
+	}
+	if (s < 0)
+		return ('\'');
+	else if (d < 0)
+		return ('"');
+	else
+		return (0);
 }
 
 char	**ms_split(char const *s, char sym)
@@ -146,7 +183,10 @@ char	**ms_split(char const *s, char sym)
 		tab[i] = (char *)malloc(sizeof(char) * (next_str_len + 1));
 		if (!tab[i])
 			return (ft_malloc_error(tab));
-		ft_strlcpy(tab[i], next_str, next_str_len + 1);
+		if (check_qm(next_str, -1, 1, 1) != 0)
+			ft_strlcpy(tab[i], "", 1);
+		else
+			ft_strlcpy(tab[i], next_str, next_str_len + 1);
 		i++;
 	}
 	tab[i] = NULL;
