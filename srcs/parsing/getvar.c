@@ -21,14 +21,14 @@ static char *ms_expand(char *str, int i)
 	char *res;
 
 	j = 0;
-	printf("i = %d\n", i);
 	while(str[i + j] && str[i + j] != ' ' && str[i + j] != '$' && str[i + j] != '\'' && str[i+j] != '"')
 		j++;
-	tmp = ft_substr(str, 0, i - 1);
 	var = env_var_get_value(ft_substr(str, i, j), j);
+	if (var == NULL)
+		return str;
+	tmp = ft_substr(str, 0, i - 1);
 	res = ft_strjoin(ft_strjoin(tmp, var), &str[i+j]);
-	//free(tmp);
-	//free(var);
+	free(tmp);
 	return (res);
 }
 
