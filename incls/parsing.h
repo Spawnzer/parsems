@@ -21,15 +21,18 @@ struct node
 	char	type;
 	int		fdI;
 	int		fdO;
+	int 	*pipe_end;
 	struct  node *next;
 
 };
 
 typedef struct node t_node;
 
-
+void ms_freeList(struct node* head);
+int ms_sanitize(char *input);
+char check_qm (char *str, int i, int s, int d);
 int		get_fdI(t_node *current, int i, int j);
-int		get_fdO(t_node *current, int i, int j);
+int		get_fdO(t_node *current, int i, int j, int fd);
 char 	*get_var(char *str, int quote, int i);
 t_node	*add_at_head(t_node **head, t_node *new);
 void	*add_at_end(t_node **head, t_node *new);
