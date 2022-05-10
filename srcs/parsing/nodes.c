@@ -16,21 +16,34 @@
 char *ms_strip(char *str, int i, int j)
 {
 	char *tmp = ft_calloc(ft_strlen(str), sizeof(char));
-	char s = check_qm(str, -1, 1, 1);
-	char d = check_qm(str, -1, 1, 1);
 
-	if (str[i] == ' ')
+	if (!str)
+		return NULL;
+	//check_qm(str, -1, 1, 1);
+	if (!(ft_isprint(str[i])))
 		i++;
 	printf("i = %d, 1st char = %d\n", i, (int)str[i]);
 	while (str[i])
 	{
-		if (s == 0 && str[i] == '\'')
+		/*if (s == 0 && str[i] == '\'')
 			i++;
 		else if (d == 0 && str[i] == '"')
-			i++;
-		tmp[j++] = str[i++];
+			i++;*/
+		if (str[i] == '\'')
+		{
+			while (str[++i] && str[i] != '\'')
+				tmp[j++] = str[i];
+		}
+		else if (str[i] == '"')
+		{
+			while (str[++i] && str[i] != '"')
+				tmp[j++] = str[i];
+		}
+		else
+			tmp[j++] = str[i++];
 	}
-	free(str);
+	if (str)
+		free(str);
 	return (tmp);
 }
 
@@ -41,6 +54,7 @@ t_node	*new_node(char *str, char *sym)
 	new->type = get_type(str, sym);
 	new->fdI = get_fdI(new, 0, 0);
 	new->fdO = get_fdO(new, 0, 0, 1);
+	new->pipe_end = NULL;
 	new->next = NULL;
 	return new;
 }
