@@ -24,10 +24,13 @@ static char *ms_expand(char *str, int i)
 	while(str[i + j] && str[i + j] != ' ' && str[i + j] != '$' && str[i + j] != '\'' && str[i+j] != '"')
 		j++;
 	var = env_var_get_value(ft_substr(str, i, j), j);
-	if (var == NULL)
-		return str;
+	printf("i = %d, j = %d\n", i, j);
 	tmp = ft_substr(str, 0, i - 1);
-	res = ft_strjoin(ft_strjoin(tmp, var), &str[i+j]);
+	if (var == NULL)
+		res = ft_strjoin(tmp, &str[i + j]);
+	else
+		res = ft_strjoin(ft_strjoin(tmp, var), &str[i + j]);
+	printf("res = '%s', strlen = %i\n", res, ft_strlen(res));
 	free(tmp);
 	return (res);
 }
