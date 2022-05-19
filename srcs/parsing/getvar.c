@@ -1,106 +1,58 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   getfd.c                                            :+:      :+:    :+:   */
+/*   getvar.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tshimoda <tshimoda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:42:54 by adubeau           #+#    #+#             */
-/*   Updated: 2022/05/18 17:25:29 by adubeau          ###   ########.fr       */
+/*   Updated: 2022/05/18 17:21:00 by adubeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
 #include <string.h>
 
-int	get_fd_i(t_node *current, char *value, int i, int j, int fd)
+static char	*ms_expand(char *str, int i)
 {
-	int		k;
-	char	*file;
+	int		j;
 	char	*tmp;
+	char	*var;
+	char	*res;
 
-	while (value[i])
-	{
-		j = 0;
-		if (value[i] == '<')
-		{
-			k = i;
-			while (value[i] == ' ' || value[i] == '<')
-				i++;
-			while (value[i] && value[i] != ' ' && value[i] != '<')
-			{
-				j++;
-				i++;
-			}
-			file = ft_substr(value, i - j, j);
-			fd = open(file, O_RDONLY);
-			if (fd == -1)
-			{
-				current->type = 'e';
-				printf("%s: No such file or directory\n", file);
-				break ;
-			}
-			tmp = ft_strjoin(ft_substr(value, 0, k), (value + i));
-			free(value);
-			value = tmp;
-			tmp = NULL;
-			i = -1;
-		}
-		i++;
-	}
-	current->value = value;
-	return (fd);
+	j = 0;
+	while (str[i + j] && str[i + j] != ' ' && str[i + j] != '$' \
+			&& str[i + j] != '\'' && str[i + j] != '"')
+		j++;
+	tmp = ft_substr(str, 0, i - 1);
+	if (str[i] == '?')
+		var = ft_itoa(get_minishell()->exit_nb);
+	else
+		var = env_var_get_value(ft_substr(str, i, j), j);
+	if (var == NULL)
+		res = ft_strjoin(tmp, &str[i + j]);
+	else
+		res = ft_strjoin(ft_strjoin(tmp, var), &str[i + j]);
+	free(tmp);
+	return (res);
 }
 
-int	get_fd_o(t_node *current, char *value, int i, int j, int fd)
+char	*get_var(char *str, int quote, int i)
 {
-	int		k;
-	char	*file;
-	char	*tmp;
-	char	type;
+	int	j;
 
-	while (value[i])
+	j = 0;
+	if (ft_strlen(str) == 0)
+		return (NULL);
+	while (str[++i])
 	{
-		j = 0;
-		if (value[i] == '>')
+		if (str[i] == '\'')
 		{
-			k = i - 1;
-			if (value[i + 1] == '>')
-			{
-				current->type = 'a';
-				i++;
-			}
-			else
-				type = 'c';
-			while (value[i] == ' ' || value[i] == '>')
-				i++;
-			while (value[i] && value[i] != ' ' && value[i] != '>')
-			{
-				j++;
-				i++;
-			}
-			file = ft_substr(value, i - j, j);
-			if (ft_is_present('/', file))
-				printf("minishell: %s: No such file or directory\n", file);
-			tmp = ft_strjoin(ft_substr(value, 0, k), (value + i));
-			free(value);
-			value = tmp;
-			tmp = NULL;
-			printf("file = %s, value = %s, type = %c\n", file, value, current->type);
-			if (type == 'c')
-			{
-				fd = open(file, O_RDWR | O_CREAT | O_TRUNC, 0777);
-				//free(file);
-			}
-			else
-			{
-				fd = open(file, O_RDWR | O_CREAT | O_APPEND, 0777);
-				//free(file);
-			}
-			i = -1;
+			quote *= -1;
+			i++;
 		}
-		i++;
+		else if (str[i] == '$' && str[i++] && quote > 0)
+			return (get_var(ms_expand(str, i), quote, i));
 	}
-	current->value = value;
-	return (fd);
+	return (str);
 }
