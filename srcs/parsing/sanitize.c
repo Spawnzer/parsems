@@ -12,6 +12,27 @@
 
 #include "builtins.h"
 
+size_t	ft_strlcpy(char *dest, const char *src, size_t n)
+{
+	unsigned int	i;
+
+	i = 0;
+	if (!dest || !src)
+		return (0);
+	if (n > 0)
+	{
+		while (--n && src[i])
+		{
+			dest[i] = src[i];
+			i++;
+		}
+		dest[i] = '\0';
+	}
+	while (src[i])
+		i++;
+	return (i);
+}
+
 int	ft_is_present(char c, char *sym)
 {
 	int	i;
