@@ -16,23 +16,24 @@
 char	*ms_strip(char *str, int i, int j)
 {
 	char	*tmp;
+	int		s;
+	int		d;
 
+	s = 1;
+	d = 1;
+	printf("ms_str:%s\n", str);
 	tmp = ft_calloc(ft_strlen(str), sizeof(char));
-	if (!str)
-		return (NULL);
-	if (!(ft_isprint(str[i])))
-		i++;
 	while (str[i])
 	{
-		if (str[i] == '\'')
+		if (str[i] == '\'' && d > 0)
 		{
-			while (str[++i] && str[i] != '\'')
-				tmp[j++] = str[i];
+			i++;
+			s *= -1;
 		}
-		else if (str[i] == '"')
+		else if (str[i] == '\"' && s > 0)
 		{
-			while (str[++i] && str[i] != '"')
-				tmp[j++] = str[i];
+			i++;
+			d *= -1;
 		}
 		else
 			tmp[j++] = str[i++];
@@ -49,9 +50,9 @@ t_node	*new_node(char *str)
 	if (str != NULL)
 	{
 		if (ft_is_present('\'', str) || ft_is_present('\"', str))
-			new->value = ms_strip(str, 0, 0);
+			new->value = ft_strdup(ms_strip(str, 0, 0));
 		else
-			new->value = str;
+			new->value = ft_strdup(str);
 		new->eof = NULL;
 		new->type = get_type(str);
 		new->fd_i = get_fd_i(new, new->value, 0, 0, 0);
