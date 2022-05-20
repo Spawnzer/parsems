@@ -6,18 +6,16 @@
 /*   By: tshimoda <tshimoda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:42:54 by adubeau           #+#    #+#             */
-/*   Updated: 2022/05/18 17:24:22 by adubeau          ###   ########.fr       */
+/*   Updated: 2022/05/19 19:24:46 by adubeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
 #include <string.h>
 
-void	scan_builtins(char **options);
-
-void	ms_free_list(struct node *head)
+void	ms_free_list(t_node *head)
 {
-	struct node	*tmp;
+	t_node	*tmp;
 
 	while (head != NULL)
 	{
@@ -55,34 +53,30 @@ char	get_type(char *str)
 //<sdfgdsfg <sdfgdsfgdfg
 //malloc error
 
-int	ms_parsing(void)
+int	ms_parsing(int i)
 {
 	t_minishell	*minishell;
 	t_node		*list;
 	t_node		*tmp;
 	char		**arg;
-	int			i;
 
 	minishell = get_minishell();
 	if (minishell->user_input[0] != '\0' && ms_sanitize(minishell->user_input))
 	{
-		arg = ms_split(get_var(minishell->user_input, 1, -1), '|');
+		arg = ms_split(get_var(minishell->user_input, 1, -1), '|', 0, 0);
 		minishell->head = new_node(arg[0]);
 		if (ft_strlen(arg[0]) == 0)
 			return (0);
-		i = 1;
 		while (arg[i] != NULL)
 		{
-			list = new_node(arg[i]);
+			list = new_node(arg[i++]);
 			add_at_end(&minishell->head, list);
-			i++;
 		}
 		tmp = minishell->head;
-		while (tmp != NULL)
-		{
-			printf("value:%s,type:%c,fdi:%d,fdo:%d\n", tmp->value, tmp->type, tmp->fd_i, tmp->fd_o);
+		while (tmp->next)
 			tmp = tmp->next;
-		}
+		if (tmp->type == 'e')
+			return (0);
 		return (1);
 	}
 	return (0);
