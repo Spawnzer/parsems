@@ -6,11 +6,11 @@
 /*   By: tshimoda <tshimoda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:42:24 by adubeau           #+#    #+#             */
-/*   Updated: 2022/05/19 19:30:37 by adubeau          ###   ########.fr       */
+/*   Updated: 2022/05/22 15:58:14 by tshimoda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
+#include "minishell.h"
 
 int	ft_is_present(char c, char *sym);
 
@@ -40,15 +40,17 @@ static unsigned int	ft_get_nb_strs(char const *s, char sym, int i, \
 		if (s[i] == '"' || s[i] == '\'')
 		{
 			q = s[i];
-			while (s[i++])
+			i++;
+			while (s[i])
 			{
 				if (s[i] == q)
 					break ;
 				else if (i == ft_strlen(s))
 				{
-					printf("Error missing %c\n", q);
+					printf("minishell: Error missing %c\n", q);
 					return (0);
 				}
+				i++;
 			}
 		}
 		if (s[i] == sym)
@@ -57,7 +59,7 @@ static unsigned int	ft_get_nb_strs(char const *s, char sym, int i, \
 	return (nb_strs);
 }
 
-static void	ft_get_next_quote(char **next_str, unsigned int *next_str_len, \
+/*static void	ft_get_next_quote(char **next_str, unsigned int *next_str_len, \
 								char c, unsigned int *i)
 {
 	while ((*next_str)[*i])
@@ -67,23 +69,31 @@ static void	ft_get_next_quote(char **next_str, unsigned int *next_str_len, \
 		if ((*next_str)[*i] == c)
 			return ;
 	}
-}
+}*/
 
 static void	ft_get_next_str(char **next_str, unsigned int *next_str_len, \
 							char sym, unsigned int i)
 {
+	char q;
 	*next_str += *next_str_len;
 	*next_str_len = 0;
 	while ((*next_str)[i] == sym)
 		(*next_str)++;
 	while ((*next_str)[i])
 	{
+		if ((*next_str)[i] == '"' || (*next_str)[i] == '\'')
+		{
+			q = (*next_str)[i];
+			(*next_str_len)++;
+			i++;
+			while((*next_str)[i] != q)
+			{
+				(*next_str_len)++;
+				i++;
+			}
+		}
 		if ((*next_str)[i] == sym)
 			return ;
-		if ((*next_str)[i] == '"')
-			ft_get_next_quote(next_str, next_str_len, '"', &i);
-		if ((*next_str)[i] == '\'')
-			ft_get_next_quote(next_str, next_str_len, '\'', &i);
 		(*next_str_len)++;
 		i++;
 	}
@@ -104,6 +114,7 @@ char	**ms_split(char const *s, char sym, unsigned int i, \
 	if (!tab || !s)
 		return (NULL);
 	next_str = (char *)s;
+	printf("nb strs:%d\n", nb_strs);
 	while (i < nb_strs)
 	{
 		ft_get_next_str(&next_str, &next_str_len, sym, 0);
